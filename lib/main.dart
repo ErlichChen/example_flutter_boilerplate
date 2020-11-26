@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:example_flutter_boilerplate/find/FindScreen.dart';
+import 'package:example_flutter_boilerplate/settings/SettingsScreen.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -24,26 +27,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Library',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: History',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 3: Settings',
-      style: optionStyle,
-    ),
+  final List<Widget> _children = [
+    FindScreen(),
+    SettingsScreen(),
+    FindScreen(),
+    SettingsScreen()
   ];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -53,12 +42,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
+      body: _children[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
