@@ -14,6 +14,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: {
+        '/second': (BuildContext conext) {
+          return SettingsScreen();
+        },
+        '/third': (BuildContext conext) {
+          return SettingsScreen();
+        }
+      },
     );
   }
 }
