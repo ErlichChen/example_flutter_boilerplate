@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:example_flutter_boilerplate/find/Company.dart';
 import 'package:example_flutter_boilerplate/find/CompanyItem.dart';
+import 'package:example_flutter_boilerplate/find/Detail/CompanyDetailScreen.dart';
+import 'package:example_flutter_boilerplate/provider/company_list.dart';
 
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:http/http.dart' as http;
 
@@ -131,107 +134,104 @@ import 'package:http/http.dart' as http;
 
 
 class FindScreen extends StatefulWidget {
-  FindScreen({Key key}) : super(key: key);
-
   @override
   _FindScreenState createState() => _FindScreenState();
 }
 
 class _FindScreenState extends State<FindScreen> {
-
-  List<Company> _companies = [];
-
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     super.initState();
-    getCompanyList2();
-  }
 
-  // http://m.app.haosou.com/index/getData?type=1&page=1
-  getCompanyList1() async{
-    String url = 'http://m.app.haosou.com/index/getData?type=1&page=1';
-    HttpClient httpClient = new HttpClient();
-    HttpClientRequest request = await httpClient.getUrl(Uri.parse(url));
-    HttpClientResponse response = await request.close();
-    var data = await response.transform(utf8.decoder).join();
-    var map = jsonDecode(data);
-    print(map);
-
-    httpClient.close();
-  }
-
-  getCompanyList2() async{
-    String url = 'http://m.app.haosou.com/index/getData?type=1&page=1';
-    var response = await http.get(url);
-    var data = response.body;
-    var map = jsonDecode(data);
-    setState(() {
-      _companies = Company.fromMapData(map);
-    });
+    CompanyListProvider provider =
+    Provider.of<CompanyListProvider>(context, listen: false);
+    provider.refreshData();
   }
 
   _buildContent() {
-    if(_companies.isEmpty) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    return SmartRefresher(
-      enablePullDown: true,
-      enablePullUp: true,
-      header: ClassicHeader(
-          refreshingText: '正在加载中...',
-          idleText: '下拉刷新',
-          completeText:'加载完成',
-          failedText: '数据刷新异常',
-          releaseText:'松开刷新'),
-      footer: ClassicFooter(
-          idleText:'加载更多数据',
-          loadingText:'玩命加载中...',
-          noDataText:'没有更多数据'
-      ),
-      onRefresh: _onRefresh,
-      onLoading: _onLoading,
-      controller: _refreshController,
-      child: ListView.builder(
-          itemCount: _companies.length,
-          itemBuilder: (context, index){
-            Company company = _companies[index];
-
-            return new GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed('/second').then(
-                        (value){
-                      print(value);
-                    }
+    return Consumer<CompanyListProvider>(builder: (context, provider, _) {
+      // if(provider.showValue == 0) {
+      //   return new Center(
+      //     child: CircularProgressIndicator(),
+      //   );
+      // }
+      return IndexedStack(
+        index: provider.showValue,
+        children: <Widget>[
+          new Center(
+            child: CircularProgressIndicator(),
+          ),
+          SmartRefresher(
+            controller: _refreshController,
+            enablePullDown: true,
+            enablePullUp: true,
+            header: ClassicHeader(
+              refreshingText: '正在加载中...',
+              idleText: '下拉刷新',
+              completeText: '加载完成',
+              failedText: '数据刷新异常',
+              releaseText: '松开刷新',
+            ),
+            footer: ClassicFooter(
+                idleText: '加载更多数据',
+                loadingText: '玩命加载中...',
+                noDataText: '没有更多数据'),
+            onRefresh: _onRefresh,
+            onLoading: _onLoading,
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                var model = provider.companyList[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                        new MaterialPageRoute(
+                            builder: (context) => CompanyDetailScreen(model)
+                        )
+                    );
+                  },
+                  child: CompanyItem(model),
                 );
               },
-              child: CompanyItem(company),
-            );
-          }
-      ),
-    );
+              itemCount: provider.companyList.length,
+            ),
+          )
+        ],
+      );
+    });
+  }
+
+  _onRefresh() async {
+    CompanyListProvider provider =
+    Provider.of<CompanyListProvider>(context, listen: false);
+    bool isSuccess = await provider.refreshData();
+    if (isSuccess) {
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshFailed();
+    }
+  }
+
+  _onLoading() async {
+    CompanyListProvider provider =
+    Provider.of<CompanyListProvider>(context, listen: false);
+    bool isSuccess = await provider.loadMoreData();
+    if (isSuccess) {
+      _refreshController.loadComplete();
+    } else {
+      _refreshController.loadFailed();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: new AppBar(
-          title: new Text('发现'),
-        ),
-        body: _buildContent()
+      appBar: new AppBar(
+        title: Text('发现'),
+      ),
+      body: _buildContent(),
     );
-  }
-
-  _onRefresh() async{
-    getCompanyList1();
-    _refreshController.refreshCompleted();
-  }
-
-  _onLoading() {
-    getCompanyList2();
-    _refreshController.loadComplete();
   }
 }

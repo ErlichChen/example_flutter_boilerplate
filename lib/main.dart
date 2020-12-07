@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:example_flutter_boilerplate/find/FindScreen.dart';
 import 'package:example_flutter_boilerplate/settings/SettingsScreen.dart';
+import 'package:example_flutter_boilerplate/provider/company_list.dart';
+import 'package:provider/provider.dart';
 
-
-void main() => runApp(MyApp());
+void main() {
+  runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => CompanyListProvider())
+        ],
+        child: MyApp(),
+      )
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override

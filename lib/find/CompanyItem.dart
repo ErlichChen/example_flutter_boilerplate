@@ -1,91 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:example_flutter_boilerplate/find/Company.dart';
 
-//
 class CompanyItem extends StatelessWidget {
-
   final Company model;
-
   CompanyItem(this.model);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 140,
-      padding: EdgeInsets.all(5),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Card(
-        elevation: 5,
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                              image:NetworkImage(model.logo),
-                              fit: BoxFit.cover
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 80,
-                        child: Text(
-                            model.location,
-                            maxLines: 1,
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          )
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "|" + model.type,
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                          Text(
-                            "|" + model.size,
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                          Text(
-                            "|" + model.employee,
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          )
-                        ],
-                      )
-                    ],
+        elevation: 5.0,
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 15.0,
+                    right: 15.0,
+                    top: 10.0,
                   ),
-                  SizedBox(
-                    width: 350,
-                    child: Divider(height: 1, color: Colors.grey),
+                  child: Image.network(
+                    model.logo,
+                    width: 50.0,
+                    height: 50.0,
                   ),
-                  Row (
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 5.0,
+                    left: 0.0,
+                    right: 5.0,
+                    bottom: 5.0,
+                  ),
+                  child: Text(
+                    model.location.substring(0,
+                        model.location.length > 6 ? 6 : model.location.length),
+                    style: TextStyle(fontSize: 13.0, color: Colors.grey),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 5.0,
+                    left: 5.0,
+                    right: 10.0,
+                    bottom: 5.0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "热招: ${model.hot} 等${model.count}个职位",
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        '|' + model.type,
+                        style: TextStyle(fontSize: 13.0, color: Colors.grey),
                       ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 20,
-                        color: Colors.grey,
+                      Text(
+                        '|' + model.size,
+                        style: TextStyle(fontSize: 13.0, color: Colors.grey),
+                      ),
+                      Text(
+                        '|' + model.employee,
+                        style: TextStyle(fontSize: 13.0, color: Colors.grey),
                       ),
                     ],
-                  )
-                ],
-              ),
-            ],
-          ),
+                  ),
+                )
+              ],
+            ),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                new Padding(
+                  padding: const EdgeInsets.only(
+                    top: 5.0,
+                    left: 10.0,
+                    right: 5.0,
+                    bottom: 15.0,
+                  ),
+                  child: Text(
+                    // '热招：' + model.hot + '等' + model.count + '个职位',
+                    '热招：${model.hot}等${model.count}个职位',
+                    style: TextStyle(fontSize: 13.0, color: Colors.grey),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 7),
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: Colors.grey,
+                  ),
+                )
+              ],
+            ),
+          ],
         ),
       ),
     );
